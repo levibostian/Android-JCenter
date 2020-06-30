@@ -4,16 +4,16 @@ See README document to learn how to use this file: https://github.com/levibostia
 
 // variables. 
 // Required 
-projectName = project.findProperty('projectName') ?: exception("Forgot to set `projectName` project property.")
-packageName = project.findProperty('packageName') ?: exception("Forgot to set `packageName` project property.")
-libraryDescription = project.findProperty('libraryDescription') ?: exception("Forgot to set `libraryDescription` project property.")
-siteUrl = project.findProperty('siteUrl') ?: exception("Forgot to set `siteUrl` project property.")
-gitUrl = project.findProperty('gitUrl') ?: exception("Forgot to set `gitUrl` project property.")
-allLicenses = project.findProperty('allLicenses') ?: texception("Forgot to set `allLicenses` project property.")
-artifact = project.findProperty('artifact') ?: exception("Forgot to set `artifact` project property.")
+def projectName = project.findProperty('projectName') ?: exception("Forgot to set `projectName` project property.")
+def packageName = project.findProperty('packageName') ?: exception("Forgot to set `packageName` project property.")
+def libraryDescription = project.findProperty('libraryDescription') ?: exception("Forgot to set `libraryDescription` project property.")
+def siteUrl = project.findProperty('siteUrl') ?: exception("Forgot to set `siteUrl` project property.")
+def gitUrl = project.findProperty('gitUrl') ?: exception("Forgot to set `gitUrl` project property.")
+def allLicenses = project.findProperty('allLicenses') ?: texception("Forgot to set `allLicenses` project property.")
+def artifact = project.findProperty('artifact') ?: exception("Forgot to set `artifact` project property.")
 // Optional
-overwritePackageVersions = project.findProperty('overwritePackageVersions') ?: false
-publicDownloadNumbers = project.findProperty('publicDownloadNumbers') ?: false
+def overwritePackageVersions = project.findProperty('overwritePackageVersions') ?: false
+def publicDownloadNumbers = project.findProperty('publicDownloadNumbers') ?: false
 
 // Maven install
 apply plugin: 'com.github.dcendents.android-maven'
