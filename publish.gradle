@@ -1,0 +1,128 @@
+/**
+This file is meant to be included in each of the modules you would like to deploy.
+ 
+```
+// put this at the bottom of the file.
+apply from: "https://raw.githubusercontent.com/levibostian/Bintray-Maven-Configs/publish.gradle"
+```
+ 
+This file requires that the version of your artifacts to be published exists in your `gradle.properties` file:
+```
+version=0.1.0
+```
+This version is automatically read for you but if you need to use it also, you can with: `project.property("version")`
+
+There are variables that this script depends on. Some global (the same for every module) and some module specific. 
+
+The global variables are all defined using environment variables. You can set those on your CI server. The module specific rules can be defined 
+
+Global:
+- BINTRAY_USERNAME: your bintray username for your bintray account to publish the package under. 
+- BINTRAY_KEY: API key for your bintray username. Find this at [bintray's edit profile page](https://bintray.com/profile/edit) > API key. 
+
+Module specific. These variables can be defined at the root `build.gradle` file of your project and that value will be shared across *all* of your modules or you can define the variable value in the module's `build.gradle` file to be specific to the module. 
+
+At a minimum, we recommend that you set these variables as module specific:
+```
+ext {
+    artifact = "module-name" // the X in `implementation "com.foo:X:0.1.0"`
+}
+```
+
+Here are all of the other required variables:
+```
+ext {
+    // Common values amongst all modules. Mostly info about the bintry repo lives here.
+    projectName = 'Boquila' // Bintray Repo name. 
+    packageName = 'com.levibostian.boquila' // Bintray package name inside of the repo. 
+    libraryDescription = 'Small, consistent, flexible way to work with remote config.'
+    siteUrl = 'https://github.com/levibostian/Boquila-Android'
+    gitUrl = 'https://github.com/levibostian/Boquila-Android.git'
+    allLicenses = ["MIT"]
+}
+```
+
+Here are optional ones:
+```
+ext {
+    overwritePackageVersions = false // if you have already deployed an artifact with the same version you are trying to deploy, allow it to overwrite or not. (default: false)
+    publicDownloadNumbers = false // if you want to make the download numbers for your artifact to be public. (default: false)
+}
+```
+*/
+
+// variables. 
+// Required 
+projectName = project.findProperty('projectName') ?: exception("Forgot to set `projectName` project property.")
+packageName = project.findProperty('packageName') ?: exception("Forgot to set `packageName` project property.")
+libraryDescription = project.findProperty('libraryDescription') ?: exception("Forgot to set `libraryDescription` project property.")
+siteUrl = project.findProperty('siteUrl') ?: exception("Forgot to set `siteUrl` project property.")
+gitUrl = project.findProperty('gitUrl') ?: exception("Forgot to set `gitUrl` project property.")
+allLicenses = project.findProperty('allLicenses') ?: texception("Forgot to set `allLicenses` project property.")
+artifact = project.findProperty('artifact') ?: exception("Forgot to set `artifact` project property.")
+// Optional
+overwritePackageVersions = project.findProperty('overwritePackageVersions') ?: false
+publicDownloadNumbers = project.findProperty('publicDownloadNumbers') ?: false
+
+// Maven install
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = packageName
+version = project.property("version")
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId packageName
+            artifactId artifact
+
+            name projectName
+            description libraryDescription
+            url siteUrl
+
+            scm {
+                connection gitUrl
+                developerConnection gitUrl
+                url siteUrl
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+// Bintray publish
+apply plugin: 'com.jfrog.bintray'
+
+bintray {
+    user = System.getenv("BINTRAY_USERNAME")
+    key = System.getenv("BINTRAY_KEY")
+
+    configurations = ['archives']
+    pkg {
+        repo = projectName
+        name = packageName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        override = overwritePackageVersions
+        publicDownloadNumbers = publicDownloadNumbers
+        version {
+            desc = libraryDescription
+        }
+    }
+}
+
+def exception(String message) {
+    throw new InvalidUserDataException("[levibostian/Bintray-Maven-Configs] " + message)
+}
