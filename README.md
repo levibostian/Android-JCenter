@@ -100,13 +100,15 @@ Define environment variables on your machine or your CI server.
 
 2. Apply the configuration file. 
 
+[Download the latest `publish.gradle` file](https://raw.githubusercontent.com/levibostian/Android-JCenter/master/publish.gradle) from this project. Save it to the `gradle/` directory of your Android Studio project. It would be awesome if you didn't need to do this, but for now, this is required to get this to work. 
+
 Android libraries are modules in an Android Studio project. Each module has it's own `build.gradle` file (in this doc we will call this the module `build.gradle` file) and your Android Studio project has a `build.gradle` file for your entire project (we call this the root `build.gradle` file). 
 
 For every Android library that you want to publish to JCenter, open up the module's `build.gradle` file and add the following:
 
 ```
 // Put this at the bottom of the file.
-apply from: "https://raw.githubusercontent.com/levibostian/Android-JCenter/master/publish.gradle"
+apply from: rootProject.file('gradle/publish.gradle')
 ```
 
 ```
