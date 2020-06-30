@@ -83,6 +83,12 @@ Your done! Because you have a Maven repository and package does not mean that yo
 
 After you have a Bintray Maven repository to upload your Android library to, it's time to build and upload your Android library. This project has tried to make this as simple and easy to do by providing Gradle configuration files for you to use in your project. 
 
+*Note: This configuration file requires that you define the version of your Android library in the project's `gradle.properties` file like this:*
+```
+version=1.0.0
+```
+*The configuration file reads this value for you automatically.*
+
 To use the Gradle configuration files, follow these steps. 
 
 1. Define environment variables. 
@@ -154,6 +160,21 @@ Here are optional variables you can define:
 ext {
     overwritePackageVersions = false // if you have already deployed an artifact with the same version you are trying to deploy, allow it to overwrite or not. (default: false)
     publicDownloadNumbers = false // if you want to make the download numbers for your artifact to be public. (default: false)
+}
+```
+
+4. Include plugins the configuration file depends on. 
+
+In the root `build.gradle` file, include this:
+
+```
+buildscript {
+    dependencies {
+        ...
+
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+    }
 }
 ```
 
